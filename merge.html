@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
@@ -16,6 +16,7 @@
       --gray-bg: #f8f7f5;
       --gray-line: #e0ddd9;
       --text-muted: #888;
+      --hero-gutter: clamp(20px, 2.5vw, 40px);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -141,54 +142,122 @@
     #home {
       margin-top: 70px;
       position: relative;
+      min-height: 550px;
       height: calc(100vh - 70px);
-      min-height: 520px;
-      display: flex;
-      align-items: center;
       overflow: hidden;
       background: var(--black);
     }
-    .hero-bg {
+    .hero-slides {
       position: absolute;
       inset: 0;
-      background-image: url('https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1800&q=80');
+    }
+    .hero-slide {
+      position: absolute;
+      inset: 0;
       background-size: cover;
-      background-position: center;
-      opacity: 0.35;
+      background-position: center bottom;
+      opacity: 0;
+      transition: opacity 0.8s ease;
     }
-    .hero-content {
-      position: relative;
+    .hero-slide.is-active {
+      opacity: 1;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 78%, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 35%),
+        linear-gradient(180deg, rgba(23,16,11,0.36) 0%, rgba(23,16,11,0.46) 46%, rgba(17,13,11,0.72) 100%);
       z-index: 1;
-      padding: 0 80px;
-      max-width: 680px;
+      pointer-events: none;
     }
-    .hero-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 4px;
-      color: var(--accent);
-      margin-bottom: 20px;
+    .hero-shell {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      width: 100%;
     }
-    .hero-title {
-      font-size: 64px;
-      font-weight: 800;
-      color: var(--white);
-      line-height: 1.05;
-      margin-bottom: 24px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
+    .hero-stage {
+      position: absolute;
+      left: var(--hero-gutter);
+      right: var(--hero-gutter);
+      bottom: 18px;
+      display: grid;
+      grid-template-columns: minmax(280px, 1fr) auto minmax(220px, 1fr);
+      align-items: end;
+      gap: 20px;
+      pointer-events: none;
+      z-index: 2;
     }
-    .hero-title span { color: var(--accent); }
+    .hero-label { display: none; }
+    .hero-word {
+      display: block;
+      user-select: none;
+      pointer-events: none;
+    }
+    .hero-word-left {
+      width: min(31vw, 540px);
+      min-width: 260px;
+      justify-self: start;
+    }
+    .hero-word-right {
+      width: min(29vw, 470px);
+      min-width: 220px;
+      justify-self: end;
+    }
+    .hero-word-image {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .hero-center {
+      display: grid;
+      justify-items: center;
+      gap: 14px;
+      margin-bottom: 30px;
+      pointer-events: all;
+    }
     .hero-desc {
-      font-size: 14px;
-      font-weight: 400;
-      color: rgba(255,255,255,0.65);
-      line-height: 1.8;
-      margin-bottom: 44px;
       max-width: 460px;
+      margin: 0;
+      color: rgba(255,255,255,0.92);
+      font-size: clamp(0.7rem, 0.82vw, 0.92rem);
+      font-weight: 800;
+      line-height: 1.35;
+      text-transform: uppercase;
+      letter-spacing: -0.04em;
+      text-align: center;
+      text-wrap: balance;
     }
-    .hero-btns { display: flex; gap: 16px; }
+    .hero-slider-nav {
+      display: flex;
+      gap: 6px;
+    }
+    .hero-arrow {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,0.88);
+      background: rgba(255,255,255,0.06);
+      color: var(--white);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .hero-arrow + .hero-arrow { margin-left: 0; }
+    .hero-arrow:hover {
+      background: rgba(255,255,255,0.16);
+      border-color: rgba(255,255,255,0.96);
+      color: var(--black);
+    }
+    .hero-arrow:active {
+      transform: translateY(1px);
+    }
+    .hero-arrow svg {
+      width: 14px;
+      height: 14px;
+    }
     .btn-primary {
       font-family: 'Manrope', Arial, sans-serif;
       font-size: 11px;
@@ -297,14 +366,23 @@
     .catalog-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-      background: var(--black);
+      gap: 0;
       border: 1px solid var(--black);
     }
     .product-card {
       background: var(--white);
       overflow: hidden;
       cursor: pointer;
+    }
+    .catalog-grid .product-card {
+      border-left: 1px solid var(--black);
+      border-top: 1px solid var(--black);
+    }
+    .catalog-grid .product-card:nth-child(-n + 3) {
+      border-top: 0;
+    }
+    .catalog-grid .product-card:nth-child(3n + 1) {
+      border-left: 0;
     }
     .product-card-img-wrap { overflow: hidden; }
     .product-card-img {
@@ -380,7 +458,17 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 20px;
     }
-    .popular-grid .product-card-img { aspect-ratio: 3/4; }
+    .popular-grid .product-card-img-wrap {
+      background: var(--white);
+    }
+    .popular-grid .product-card-img {
+      aspect-ratio: 4/3;
+      object-fit: contain;
+      padding: 18px;
+    }
+    .popular-grid .product-card:hover .product-card-img {
+      transform: scale(1.04);
+    }
 
     /* ─── CONTACT ─── */
     #contact {
@@ -851,6 +939,17 @@
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 1200px) {
+      #home { min-height: 550px; }
+      .hero-stage {
+        grid-template-columns: minmax(220px, 1fr) auto minmax(180px, 1fr);
+        gap: 18px;
+      }
+      .hero-word-left {
+        width: min(34vw, 500px);
+      }
+      .hero-word-right {
+        width: min(26vw, 360px);
+      }
       .popular-grid { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 960px) {
@@ -858,10 +957,37 @@
       nav { gap: 20px; }
       section { padding: 60px 40px; }
       footer { padding: 24px 40px; }
-      .hero-content { padding: 0 40px; }
-      .hero-title { font-size: 46px; }
+      #home { min-height: 550px; height: auto; }
+      .hero-stage {
+        bottom: 20px;
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+      .hero-word-left {
+        width: min(68vw, 420px);
+        min-width: 220px;
+      }
+      .hero-word-right {
+        width: min(52vw, 270px);
+        min-width: 180px;
+      }
+      .hero-center { margin-bottom: 0; }
+      .hero-arrow { width: 32px; height: 32px; }
       .about-grid { grid-template-columns: 1fr; gap: 40px; }
       .catalog-grid { grid-template-columns: repeat(2, 1fr); }
+      .catalog-grid .product-card {
+        border-left: 1px solid var(--black);
+        border-top: 1px solid var(--black);
+      }
+      .catalog-grid .product-card:nth-child(-n + 2) {
+        border-top: 0;
+      }
+      .catalog-grid .product-card:nth-child(3n + 1) {
+        border-left: 1px solid var(--black);
+      }
+      .catalog-grid .product-card:nth-child(2n + 1) {
+        border-left: 0;
+      }
       .popular-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 640px) {
@@ -870,15 +996,218 @@
       .header-right { display: none; }
       .mobile-right { display: flex; }
       body { padding-top: 0; }
-      #home { margin-top: 60px; }
-      .hero-content { padding: 0 24px; }
-      .hero-title { font-size: 36px; }
-      .hero-btns { flex-direction: column; }
+      #home {
+        margin-top: 60px;
+        min-height: 540px;
+      }
+      .hero-slide {
+        background-position: 64% bottom;
+      }
+      .hero-stage {
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+        gap: 16px;
+      }
+      .hero-word-left {
+        width: min(82vw, 360px);
+        min-width: 0;
+      }
+      .hero-word-right {
+        width: min(56vw, 230px);
+        min-width: 0;
+      }
+      .hero-center {
+        justify-items: start;
+      }
+      .hero-desc {
+        max-width: 280px;
+        font-size: 0.72rem;
+        text-align: left;
+        text-wrap: initial;
+      }
+      .hero-slider-nav { justify-content: flex-start; }
       section { padding: 48px 24px; }
       .catalog-grid { grid-template-columns: 1fr; }
+      .catalog-grid .product-card {
+        border-left: 0;
+        border-top: 1px solid var(--black);
+      }
+      .catalog-grid .product-card:first-child {
+        border-top: 0;
+      }
       .popular-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
       footer { padding: 20px 24px; flex-direction: column; gap: 12px; text-align: center; }
       .cart-sidebar { width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .hero-stage {
+        left: 16px;
+        right: 16px;
+      }
+      .hero-word-left {
+        width: min(82vw, 300px);
+      }
+      .hero-word-right {
+        width: min(58vw, 190px);
+      }
+      .hero-desc { max-width: 240px; }
+    }
+    @media (max-width: 360px) {
+      .hero-stage {
+        left: 14px;
+        right: 14px;
+      }
+      .hero-word-left { width: min(84vw, 260px); }
+      .hero-word-right { width: min(60vw, 170px); }
+      .hero-desc { max-width: 200px; }
+    }
+    /* MERGED REFERENCE HERO */
+    #home.merge-home {
+      --merge-wordmark-left-width: min(31vw, 540px);
+      --merge-bottom-lift: 30px;
+      padding: 0;
+      margin-top: 70px;
+      position: relative;
+      min-height: calc(100vh - 70px);
+      min-height: calc(100svh - 70px);
+      height: calc(100vh - 70px);
+      height: calc(100svh - 70px);
+      overflow: hidden;
+      background: var(--black);
+      isolation: isolate;
+    }
+    #home.merge-home .hero-slides {
+      z-index: 0;
+    }
+    #home.merge-home::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 78%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 35%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 30%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    #home.merge-home img {
+      display: block;
+      max-width: 100%;
+    }
+    #home.merge-home .bottom {
+      position: absolute;
+      right: var(--hero-gutter);
+      bottom: 18px;
+      left: var(--hero-gutter);
+      z-index: 2;
+      display: grid;
+      grid-template-columns: var(--merge-wordmark-left-width) minmax(280px, 1fr) calc(var(--merge-wordmark-left-width) * 0.7243);
+      align-items: end;
+      gap: 20px;
+    }
+    #home.merge-home .wordmark {
+      height: auto;
+      max-width: 100%;
+    }
+    #home.merge-home .wordmark--left {
+      width: var(--merge-wordmark-left-width);
+      margin-bottom: var(--merge-bottom-lift);
+      justify-self: start;
+    }
+    #home.merge-home .wordmark--right {
+      width: calc(var(--merge-wordmark-left-width) * 0.7243);
+      margin-bottom: var(--merge-bottom-lift);
+      justify-self: end;
+    }
+    #home.merge-home .centerpiece {
+      display: grid;
+      grid-column: 2;
+      justify-items: center;
+      justify-self: center;
+      gap: 14px;
+      margin-bottom: var(--merge-bottom-lift);
+    }
+    #home.merge-home .slogan {
+      max-width: 460px;
+      margin: 0;
+      color: rgba(255, 255, 255, 0.92);
+      font-size: clamp(0.7rem, 0.82vw, 0.92rem);
+      font-weight: 800;
+      line-height: 1.35;
+      letter-spacing: -0.04em;
+      text-align: center;
+      text-transform: uppercase;
+      text-wrap: balance;
+    }
+    #home.merge-home .arrow-group {
+      display: flex;
+      gap: 6px;
+    }
+    #home.merge-home .arrow {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0;
+      cursor: pointer;
+      appearance: none;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    }
+    #home.merge-home .arrow:hover {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.96);
+    }
+    #home.merge-home .arrow:active {
+      transform: translateY(1px);
+    }
+    #home.merge-home .arrow img {
+      width: 14px;
+      height: 14px;
+    }
+    #home.merge-home .arrow--next img {
+      transform: rotate(180deg);
+    }
+    @media (max-width: 1180px) {
+      #home.merge-home {
+        --merge-wordmark-left-width: min(34vw, 500px);
+      }
+      #home.merge-home .bottom {
+        grid-template-columns: var(--merge-wordmark-left-width) minmax(220px, 1fr) calc(var(--merge-wordmark-left-width) * 0.7243);
+      }
+    }
+    @media (max-width: 900px) {
+      #home.merge-home {
+        --merge-wordmark-left-width: min(68vw, 420px);
+        --merge-bottom-lift: 0px;
+      }
+      #home.merge-home .bottom {
+        bottom: 20px;
+        grid-template-columns: 1fr;
+        gap: 18px;
+      }
+    }
+    @media (max-width: 640px) {
+      #home.merge-home {
+        --merge-wordmark-left-width: min(82vw, 360px);
+      }
+      #home.merge-home .bottom {
+        left: 20px;
+        right: 20px;
+      }
+      #home.merge-home .centerpiece {
+        justify-items: start;
+      }
+      #home.merge-home .slogan {
+        max-width: 280px;
+        font-size: 0.72rem;
+        text-align: left;
+        text-wrap: initial;
+      }
+      #home.merge-home .arrow-group {
+        justify-content: flex-start;
+      }
     }
   </style>
 </head>
@@ -952,19 +1281,41 @@
 </div>
 
 <!-- ═══ HERO ═══ -->
-<section id="home">
-  <div class="hero-bg"></div>
-  <div class="hero-content">
-    <p class="hero-label" data-i18n="hero_label">Мебель ручной работы</p>
-    <h1 class="hero-title">Qadam<br><span>Loft</span></h1>
-    <p class="hero-desc" data-i18n="hero_desc">
-      Авторская мебель в стиле лофт — создаём пространства, которые вдохновляют. Каждое изделие это сочетание металла, дерева и характера.
-    </p>
-    <div class="hero-btns">
-      <a href="#catalog" class="btn-primary" data-i18n="btn_catalog">Смотреть каталог</a>
-      <a href="#contact" class="btn-secondary" data-i18n="btn_contact_hero">Связаться с нами</a>
-    </div>
+<section id="home" class="merge-home">
+  <div class="hero-slides" aria-hidden="true">
+    <div class="hero-slide is-active" style="background-image:url('pexels-albeg-27023397.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('pexels-artbovich-6283968.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('pexels-artbovich-6296918.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('pexels-artbovich-7018828.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('pexels-artbovich-7174409.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('pexels-artbovich-8134762.jpg')"></div>
   </div>
+  <div class="hero-overlay"></div>
+  <div class="bottom">
+      <img
+        class="wordmark wordmark--left"
+        src="QADAM.png"
+        alt="QADAM"
+      >
+
+      <div class="centerpiece">
+        <p class="slogan" data-i18n="hero_desc">Изготавливаем мебель по индивидуальному дизайну из высококачественных материалов</p>
+        <div class="arrow-group">
+          <button class="arrow arrow--prev" type="button" onclick="changeHeroSlide(-1)" aria-label="Предыдущий слайд">
+            <img src="https://static.tildacdn.com/tild3933-6234-4631-a333-396131623031/arrow_white.svg" alt="">
+          </button>
+          <button class="arrow arrow--next" type="button" onclick="changeHeroSlide(1)" aria-label="Следующий слайд">
+            <img src="https://static.tildacdn.com/tild3933-6234-4631-a333-396131623031/arrow_white.svg" alt="">
+          </button>
+        </div>
+      </div>
+
+      <img
+        class="wordmark wordmark--right"
+        src="LOFT.png"
+        alt="LOFT"
+      >
+    </div>
 </section>
 
 <!-- ═══ ABOUT ═══ -->
@@ -1096,7 +1447,7 @@ const T = {
     nav_home:'Главная', nav_about:'О компании', nav_catalog:'Каталог', nav_contact:'Связаться с нами',
     btn_consult:'Получить консультацию',
     hero_label:'Мебель ручной работы',
-    hero_desc:'Авторская мебель в стиле лофт — создаём пространства, которые вдохновляют. Каждое изделие это сочетание металла, дерева и характера.',
+    hero_desc:'Авторская мебель в стиле лофт создаёт пространство с характером из металла и дерева.',
     btn_catalog:'Смотреть каталог', btn_contact_hero:'Связаться с нами',
     about_label:'О нас', about_title:'Qadam Loft —\nэто больше, чем мебель',
     about_p1:'Qadamloft — производственная компания, создающая мебель в стиле лофт для жилых и коммерческих пространств. Мы разрабатываем и изготавливаем изделия под заказ, учитывая задачи клиента, особенности интерьера и желаемый стиль.',
@@ -1118,7 +1469,7 @@ const T = {
     nav_home:'Басты бет', nav_about:'Компания туралы', nav_catalog:'Каталог', nav_contact:'Бізбен байланыс',
     btn_consult:'Кеңес алу',
     hero_label:'Қолдан жасалған жиһаз',
-    hero_desc:'Лофт стиліндегі авторлық жиһаз — шабыт беретін кеңістіктер жасаймыз. Әр бұйым — металл, ағаш және мінездің үйлесімі.',
+    hero_desc:'Лофт стиліндегі авторлық жиһаз металл мен ағаштан мінезі бар кеңістік жасайды.',
     btn_catalog:'Каталогты көру', btn_contact_hero:'Бізбен байланыс',
     about_label:'Біз туралы', about_title:'Qadam Loft —\nжиһаздан да көп',
     about_p1:'Qadamloft — тұрғын үй және коммерциялық кеңістіктерге арналған лофт стиліндегі жиһаз жасайтын өндірістік компания. Біз тапсырыс бойынша бұйымдар әзірлеп, дайындаймыз — клиенттің міндеттерін, интерьердің ерекшелігін және қалаған стилін ескере отырып.',
@@ -1140,7 +1491,7 @@ const T = {
     nav_home:'Home', nav_about:'About', nav_catalog:'Catalog', nav_contact:'Contact Us',
     btn_consult:'Get Consultation',
     hero_label:'Handcrafted Furniture',
-    hero_desc:'Signature loft-style furniture — we create spaces that inspire. Every piece is a blend of metal, wood, and character.',
+    hero_desc:'Bespoke loft-style furniture creates spaces with character from metal and wood.',
     btn_catalog:'View Catalog', btn_contact_hero:'Contact Us',
     about_label:'About Us', about_title:'Qadam Loft —\nMore Than Furniture',
     about_p1:'Qadamloft is a manufacturing company creating loft-style furniture for residential and commercial spaces. We develop and produce custom pieces tailored to the client\'s needs, interior specifics, and desired style.',
@@ -1164,81 +1515,84 @@ const T = {
 const PRODUCTS = [
   {
     id:1, popular:true,
-    name:{ ru:'Диван Loft Pro', kz:'Loft Pro диваны', en:'Sofa Loft Pro' },
-    cat:{ ru:'Диваны', kz:'Диван', en:'Sofas' },
-    price:185000,
-    img:'popular.png',
-    desc:{ ru:'Диван в стиле лофт с кованными металлическими ножками и мягкой съёмной обивкой из экокожи. Прочный каркас из массива дерева.', kz:'Металл аяқтары мен жұмсақ алынбалы экотері аптасы бар лофт стиліндегі диван.', en:'Loft-style sofa with forged metal legs and soft removable eco-leather upholstery. Solid wood frame.' }
+    name:{ ru:'Конференц Стол', kz:'Конференц Стол', en:'Конференц Стол' },
+    cat:{ ru:'Столы', kz:'Үстелдер', en:'Tables' },
+    price:98000,
+    img:'Конференц Стол.png',
+    desc:{ ru:'Конференц-стол для офиса или переговорной. Изготавливается под ваш размер, проект и оттенок материалов.', kz:'Кеңсе немесе келіссөз бөлмесіне арналған конференц-үстел. Өлшемі мен материалы жобаңызға сай жасалады.', en:'Conference table for office or meeting room. Made to your size, layout, and material finish.' }
   },
   {
     id:2, popular:true,
-    name:{ ru:'Стол Industrial', kz:'Industrial үстел', en:'Industrial Table' },
+    name:{ ru:'Офисный стол Кайт', kz:'Офисный стол Кайт', en:'Офисный стол Кайт' },
     cat:{ ru:'Столы', kz:'Үстелдер', en:'Tables' },
-    price:95000,
-    img:'popular.png',
-    desc:{ ru:'Обеденный стол из массива дерева с металлическим каркасом. Покрытие — натуральное масло-воск. Выдерживает нагрузку до 200 кг.', kz:'Металл жақтаулы массив ағаштан жасалған тамақ үстелі. Жабын — табиғи май-балауыз.', en:'Dining table from solid wood with metal frame. Coating — natural oil-wax. Withstands up to 200 kg load.' }
+    price:120000,
+    img:'Стол Офисный.png',
+    desc:{ ru:'Офисный стол для рабочего пространства в современном стиле. Доступно изготовление под нужные размеры и конфигурацию.', kz:'Заманауи жұмыс аймағына арналған кеңсе үстелі. Өлшемі мен конфигурациясы тапсырыс бойынша өзгереді.', en:'Office desk for a modern workspace. Available in custom size and configuration.' }
   },
   {
     id:3, popular:true,
-    name:{ ru:'Кресло Raw', kz:'Raw кресло', en:'Raw Armchair' },
-    cat:{ ru:'Кресла', kz:'Креслолар', en:'Armchairs' },
+    name:{ ru:'Стол Гиният', kz:'Стол Гиният', en:'Стол Гиният' },
+    cat:{ ru:'Столы', kz:'Үстелдер', en:'Tables' },
     price:65000,
-    img:'popular.png',
-    desc:{ ru:'Кресло с деревянными подлокотниками и мягким сиденьем. Ножки из чёрного металла. Обивка — ткань или экокожа на выбор.', kz:'Ағаш қолтықтары мен жұмсақ отырғышы бар кресло. Қара металл аяқтары.', en:'Armchair with wooden armrests and soft seat. Black metal legs. Upholstery — fabric or eco-leather of choice.' }
+    img:'Стол Гиният.png',
+    desc:{ ru:'Модель стола из каталога Qadam Loft. Детали исполнения, размер и итоговую стоимость можно уточнить при консультации.', kz:'Qadam Loft каталогындағы үстел үлгісі. Өлшемі мен соңғы бағасы кеңес кезінде нақтыланады.', en:'Table model from the Qadam Loft catalog. Size, finish, and final price can be confirmed during consultation.' }
   },
   {
-    id:4, popular:false,
-    name:{ ru:'Кровать Frame', kz:'Frame кереует', en:'Frame Bed' },
-    cat:{ ru:'Кровати', kz:'Кереуеттер', en:'Beds' },
-    price:145000,
-    img:'product.jpg',
-    desc:{ ru:'Кровать с металлическим изголовьем и деревянным основанием. Размеры: 160×200, 180×200. Ортопедические рейки в комплекте.', kz:'Металл бас жақтауы мен ағаш негізі бар кереует. Өлшемдері: 160×200, 180×200.', en:'Bed with metal headboard and wooden base. Sizes: 160×200, 180×200. Orthopedic slats included.' }
+    id:4, popular:true,
+    name:{ ru:'Стол Двойной Алпамыс', kz:'Стол Двойной Алпамыс', en:'Стол Двойной Алпамыс' },
+    cat:{ ru:'Столы', kz:'Үстелдер', en:'Tables' },
+    price:135000,
+    img:'Стол Двойной Алпамыс.jpeg',
+    desc:{ ru:'Двойной стол для офиса, кабинета или домашнего рабочего пространства. Изготавливается под задачу и размеры проекта.', kz:'Кеңсе, кабинет немесе үй жұмыс аймағына арналған қос үстел. Жоба өлшеміне сай дайындалады.', en:'Double table for office, studio, or home workspace. Produced to fit your project dimensions.' }
   },
   {
-    id:5, popular:false,
-    name:{ ru:'Стеллаж Brick', kz:'Brick сөре', en:'Brick Shelf Unit' },
-    cat:{ ru:'Хранение', kz:'Сақтау', en:'Storage' },
-    price:78000,
-    img:'product.jpg',
-    desc:{ ru:'Открытый стеллаж из металла и дерева в стиле лофт. 5 полок, регулируемые по высоте. Грузоподъёмность каждой полки — 30 кг.', kz:'Лофт стиліндегі металл мен ағаштан жасалған ашық сөре. 5 қалқан, биіктігі бойынша реттеледі.', en:'Open shelving unit from metal and wood in loft style. 5 shelves, adjustable height. Each shelf load capacity — 30 kg.' }
+    id:5, popular:true,
+    name:{ ru:'Стол Рабия', kz:'Стол Рабия', en:'Стол Рабия' },
+    cat:{ ru:'Столы', kz:'Үстелдер', en:'Tables' },
+    price:89000,
+    img:'Стол Рабия.png',
+    desc:{ ru:'Стол ручной работы для интерьера в стиле loft/minimal. Возможен подбор цвета, размеров и материала под ваш интерьер.', kz:'Loft/minimal стиліндегі қолдан жасалған үстел. Түсі, өлшемі және материалы интерьерге сай таңдалады.', en:'Handcrafted table for loft/minimal interiors. Color, size, and materials can be customized.' }
   },
   {
     id:6, popular:false,
-    name:{ ru:'Журнальный стол Grid', kz:'Grid кофе үстелі', en:'Grid Coffee Table' },
-    cat:{ ru:'Столы', kz:'Үстелдер', en:'Tables' },
-    price:45000,
-    img:'product.jpg',
-    desc:{ ru:'Журнальный столик с металлическими ножками и деревянной столешницей. Компактный дизайн, идеально для гостиной.', kz:'Металл аяқтары мен ағаш үстелдігі бар кофе үстелі. Компактты дизайн.', en:'Coffee table with metal legs and wooden tabletop. Compact design, perfect for living room.' }
+    name:{ ru:'Стул Эльмира', kz:'Стул Эльмира', en:'Стул Эльмира' },
+    cat:{ ru:'Стулья', kz:'Орындықтар', en:'Chairs' },
+    price:48000,
+    img:'Стул Эльмира.png',
+    desc:{ ru:'Стул для обеденной зоны, офиса или коммерческого пространства. Материалы и обивка подбираются под проект.', kz:'Асхана, кеңсе немесе коммерциялық кеңістікке арналған орындық. Материалы мен қаптамасы жобаға сай таңдалады.', en:'Chair for dining, office, or commercial interiors. Materials and upholstery are selected for your project.' }
   },
   {
     id:7, popular:false,
-    name:{ ru:'Барный стул Steel', kz:'Steel бар орындығы', en:'Steel Bar Stool' },
-    cat:{ ru:'Стулья', kz:'Орындықтар', en:'Stools' },
-    price:32000,
-    img:'product.jpg',
-    desc:{ ru:'Барный стул из нержавеющей стали с деревянным сиденьем. Регулируемая высота. Подходит для баров и кухонных островков.', kz:'Ағаш отырғышы бар тот баспайтын болаттан жасалған бар орындығы. Реттелетін биіктік.', en:'Bar stool from steel with wooden seat. Adjustable height. Suitable for bars and kitchen islands.' }
+    name:{ ru:'Шкаф Костанай', kz:'Шкаф Костанай', en:'Шкаф Костанай' },
+    cat:{ ru:'Шкафы', kz:'Шкафтар', en:'Cabinets' },
+    price:165000,
+    img:'Шкаф Костанай.png',
+    desc:{ ru:'Шкаф для хранения, выполненный под заказ. Наполнение, размеры и отделка подбираются под ваше пространство.', kz:'Сақтауға арналған тапсырыспен жасалатын шкаф. Ішкі құрылымы, өлшемі және әрлеуі кеңістікке сай таңдалады.', en:'Custom storage cabinet. Interior layout, size, and finish are adapted to your space.' }
   },
   {
-    id:8, popular:false,
-    name:{ ru:'Диван угловой Forge', kz:'Forge бұрыш диваны', en:'Corner Sofa Forge' },
-    cat:{ ru:'Диваны', kz:'Диван', en:'Sofas' },
-    price:245000,
-    img:'product.jpg',
-    desc:{ ru:'Угловой диван с металлическими ножками и съёмными чехлами. Модульная конструкция позволяет менять конфигурацию.', kz:'Металл аяқтары мен алынбалы қаптамалары бар бұрыш дивань. Модульды конструкция.', en:'Corner sofa with metal legs and removable covers. Modular design allows configuration changes.' }
+    id:8, popular:true,
+    name:{ ru:'Стол Алпамыс', kz:'Үстел Алпамыс', en:'Alpamys Table' },
+    cat:{ ru:'Столы', kz:'Үстелдер', en:'Tables' },
+    price:285000,
+    img:'Стол Алпамыс.png',
+    desc:{ ru:'Круглый стол для переговорной, кафе или жилого пространства. Размер, оттенок и основание подбираются под проект.', kz:'Келіссөз бөлмесіне, кафе не тұрғын кеңістікке арналған дөңгелек үстел. Өлшемі, реңкі және тірегі жобаға сай таңдалады.', en:'Round table for a meeting room, cafe, or residential space. Size, finish, and base can be customized for the project.' }
   },
   {
     id:9, popular:false,
-    name:{ ru:'Тумба Pipe', kz:'Pipe тумба', en:'Pipe Nightstand' },
-    cat:{ ru:'Хранение', kz:'Сақтау', en:'Storage' },
-    price:28000,
-    img:'product.jpg',
-    desc:{ ru:'Прикроватная тумба из труб и дерева в индустриальном стиле. 2 полки для хранения. Лёгкий монтаж.', kz:'Индустриалды стильдегі құбырлар мен ағаштан жасалған кереует жанындағы тумба. 2 сақтау қалқаны.', en:'Bedside nightstand from pipes and wood in industrial style. 2 storage shelves. Easy assembly.' }
+    name:{ ru:'Стол Конференц', kz:'Конференц үстел', en:'Conference Table' },
+    cat:{ ru:'Столы', kz:'Үстелдер', en:'Tables' },
+    price:168000,
+    img:'Стол Конференц.png',
+    desc:{ ru:'Конференц-стол для офиса или переговорной. Изготавливается под нужные размеры, конфигурацию и оттенок материалов.', kz:'Кеңсе немесе келіссөз бөлмесіне арналған конференц-үстел. Өлшемі, конфигурациясы және материалы тапсырыс бойынша өзгереді.', en:'Conference table for an office or meeting room. Available in custom size, layout, and material finish.' }
   },
 ];
 
 // ─── STATE ────────────────────────────────────────────────
 let lang = 'ru';
 let cart = [];
+let heroSlideIndex = 0;
+let heroSliderTimer = null;
+const HERO_SLIDE_DELAY = 3000;
 
 // ─── HELPERS ─────────────────────────────────────────────
 const t = key => T[lang][key] || key;
@@ -1258,12 +1612,54 @@ function setLang(l) {
   renderCart();
 }
 
+// ─── HERO SLIDER ───────────────────────────────────────────
+function setHeroSlide(index) {
+  const slides = document.querySelectorAll('.hero-slide');
+  if (!slides.length) return;
+  heroSlideIndex = (index + slides.length) % slides.length;
+  slides.forEach((slide, slideIndex) => {
+    slide.classList.toggle('is-active', slideIndex === heroSlideIndex);
+  });
+}
+
+function stopHeroSlider() {
+  if (!heroSliderTimer) return;
+  clearInterval(heroSliderTimer);
+  heroSliderTimer = null;
+}
+
+function startHeroSlider() {
+  const slides = document.querySelectorAll('.hero-slide');
+  if (!slides.length) return;
+  stopHeroSlider();
+  heroSliderTimer = window.setInterval(() => {
+    setHeroSlide(heroSlideIndex + 1);
+  }, HERO_SLIDE_DELAY);
+}
+
+function changeHeroSlide(step) {
+  setHeroSlide(heroSlideIndex + step);
+  startHeroSlider();
+}
+
+function initHeroSlider() {
+  const home = document.getElementById('home');
+  const slides = document.querySelectorAll('.hero-slide');
+  if (!home || !slides.length) return;
+  setHeroSlide(0);
+  startHeroSlider();
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopHeroSlider();
+    else startHeroSlider();
+  });
+}
+
 // ─── PRODUCT CARD ─────────────────────────────────────────
 function cardHTML(p, compact) {
   return `
     <div class="product-card">
       <div class="product-card-img-wrap">
-        <img src="${p.img}" alt="${p.name[lang]}" class="product-card-img" loading="lazy"${compact ? ' style="aspect-ratio:3/4"' : ''}>
+        <img src="${p.img}" alt="${p.name[lang]}" class="product-card-img" loading="lazy">
       </div>
       <div class="product-card-body">
         <div class="product-card-cat">${p.cat[lang]}</div>
@@ -1282,7 +1678,7 @@ function renderCatalog() {
 }
 function renderPopular() {
   document.getElementById('popularGrid').innerHTML =
-    PRODUCTS.filter(p => p.popular).slice(0,5).map(p => cardHTML(p, true)).join('');
+    PRODUCTS.filter(p => p.popular).slice(0,6).map(p => cardHTML(p, true)).join('');
 }
 
 // ─── CART ─────────────────────────────────────────────────
@@ -1402,9 +1798,9 @@ function updateMobileLangs(l) {
 }
 
 // ─── INIT ─────────────────────────────────────────────────
-renderCatalog();
-renderPopular();
-renderCart();
+setLang(lang);
+updateMobileLangs(lang);
+initHeroSlider();
 
 // Fix social links
 document.querySelectorAll('.social-link').forEach(a => {
@@ -1414,3 +1810,4 @@ document.querySelectorAll('.social-link').forEach(a => {
 </script>
 </body>
 </html>
+
