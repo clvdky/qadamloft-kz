@@ -373,6 +373,9 @@
       background: var(--white);
       overflow: hidden;
       cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
     .catalog-grid .product-card {
       border-left: 1px solid var(--black);
@@ -393,7 +396,12 @@
       transition: transform 0.35s;
     }
     .product-card:hover .product-card-img { transform: scale(1.04); }
-    .product-card-body { padding: 20px; }
+    .product-card-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
     .product-card-cat {
       font-size: 9px;
       font-weight: 700;
@@ -418,7 +426,8 @@
     .product-card-btns {
       display: flex;
       gap: 8px;
-      margin-top: 14px;
+      margin-top: auto;
+      padding-top: 14px;
     }
     .btn-detail {
       font-family: 'Manrope', Arial, sans-serif;
@@ -975,7 +984,7 @@
       .hero-arrow { width: 32px; height: 32px; }
       .about-grid { grid-template-columns: 1fr; gap: 40px; }
       .catalog-grid { grid-template-columns: repeat(2, 1fr); }
-      .catalog-grid .product-card {
+      .catalog-grid .product-card:nth-child(n) {
         border-left: 1px solid var(--black);
         border-top: 1px solid var(--black);
       }
@@ -1028,15 +1037,25 @@
       }
       .hero-slider-nav { justify-content: flex-start; }
       section { padding: 48px 24px; }
-      .catalog-grid { grid-template-columns: 1fr; }
-      .catalog-grid .product-card {
-        border-left: 0;
+      .catalog-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0;
+        background: transparent;
+      }
+      .catalog-grid .product-card-name {
+        min-height: 2.6em;
+      }
+      .catalog-grid .product-card:nth-child(n) {
+        border-left: 1px solid var(--black);
         border-top: 1px solid var(--black);
       }
-      .catalog-grid .product-card:first-child {
+      .catalog-grid .product-card:nth-child(-n + 2) {
         border-top: 0;
       }
-      .popular-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .catalog-grid .product-card:nth-child(2n + 1) {
+        border-left: 0;
+      }
+      .popular-grid { grid-template-columns: 1fr; gap: 12px; }
       footer { padding: 20px 24px; flex-direction: column; gap: 12px; text-align: center; }
       .cart-sidebar { width: 100%; }
     }
@@ -1064,8 +1083,7 @@
     }
     /* MERGED REFERENCE HERO */
     #home.merge-home {
-      --merge-wordmark-left-width: min(31vw, 540px);
-      --merge-bottom-lift: 30px;
+      --merge-wordmark-height: 70px;
       padding: 0;
       margin-top: 70px;
       position: relative;
@@ -1096,42 +1114,47 @@
     }
     #home.merge-home .bottom {
       position: absolute;
-      right: var(--hero-gutter);
-      bottom: 18px;
-      left: var(--hero-gutter);
+      inset: 0;
       z-index: 2;
-      display: grid;
-      grid-template-columns: var(--merge-wordmark-left-width) minmax(280px, 1fr) calc(var(--merge-wordmark-left-width) * 0.7243);
-      align-items: end;
-      gap: 20px;
+      pointer-events: none;
     }
     #home.merge-home .wordmark {
-      height: auto;
-      max-width: 100%;
+      position: absolute;
+      z-index: 1;
+      height: var(--merge-wordmark-height);
+      width: auto;
+      max-width: none;
     }
     #home.merge-home .wordmark--left {
-      width: var(--merge-wordmark-left-width);
-      margin-bottom: var(--merge-bottom-lift);
-      justify-self: start;
+      left: 40px;
+      bottom: 15px;
+      margin-bottom: 0;
     }
     #home.merge-home .wordmark--right {
-      width: calc(var(--merge-wordmark-left-width) * 0.7243);
-      margin-bottom: var(--merge-bottom-lift);
-      justify-self: end;
+      right: 40px;
+      bottom: 15px;
+      margin-bottom: 0;
     }
     #home.merge-home .centerpiece {
+      position: absolute;
+      left: 50%;
+      top: 8px;
       display: grid;
-      grid-column: 2;
       justify-items: center;
-      justify-self: center;
-      gap: 14px;
-      margin-bottom: var(--merge-bottom-lift);
+      gap: 0;
+      width: min(460px, calc(100vw - 480px));
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 2;
+      margin-bottom: 0;
+      pointer-events: none;
     }
     #home.merge-home .slogan {
-      max-width: 460px;
+      order: 1;
+      max-width: 100%;
       margin: 0;
       color: rgba(255, 255, 255, 0.92);
-      font-size: clamp(0.7rem, 0.82vw, 0.92rem);
+      font-size: 13px;
       font-weight: 800;
       line-height: 1.35;
       letter-spacing: -0.04em;
@@ -1140,16 +1163,22 @@
       text-wrap: balance;
     }
     #home.merge-home .arrow-group {
+      position: absolute;
+      left: 50%;
+      bottom: 40px;
       display: flex;
-      gap: 6px;
+      gap: 4px;
+      transform: translateX(-50%);
+      pointer-events: auto;
+      z-index: 4;
     }
     #home.merge-home .arrow {
       display: grid;
       place-items: center;
-      width: 40px;
-      height: 40px;
-      border: 1px solid rgba(255, 255, 255, 0.88);
-      background: rgba(255, 255, 255, 0.06);
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      background: rgba(17, 13, 11, 0.1);
       padding: 0;
       cursor: pointer;
       appearance: none;
@@ -1163,50 +1192,108 @@
       transform: translateY(1px);
     }
     #home.merge-home .arrow img {
-      width: 14px;
-      height: 14px;
+      width: 12px;
+      height: 12px;
     }
     #home.merge-home .arrow--next img {
       transform: rotate(180deg);
     }
     @media (max-width: 1180px) {
       #home.merge-home {
-        --merge-wordmark-left-width: min(34vw, 500px);
+        --merge-wordmark-height: 56px;
       }
-      #home.merge-home .bottom {
-        grid-template-columns: var(--merge-wordmark-left-width) minmax(220px, 1fr) calc(var(--merge-wordmark-left-width) * 0.7243);
+      #home.merge-home .centerpiece {
+        width: 300px;
+      }
+      #home.merge-home .slogan {
+        font-size: 12px;
       }
     }
     @media (max-width: 900px) {
       #home.merge-home {
-        --merge-wordmark-left-width: min(68vw, 420px);
-        --merge-bottom-lift: 0px;
+        --merge-wordmark-height: 52px;
       }
-      #home.merge-home .bottom {
-        bottom: 20px;
-        grid-template-columns: 1fr;
-        gap: 18px;
+      #home.merge-home .wordmark--left {
+        left: 20px;
+        bottom: 4px;
+      }
+      #home.merge-home .wordmark--right {
+        right: 20px;
+        bottom: 4px;
+      }
+      #home.merge-home .centerpiece {
+        width: 300px;
       }
     }
     @media (max-width: 640px) {
       #home.merge-home {
-        --merge-wordmark-left-width: min(82vw, 360px);
-      }
-      #home.merge-home .bottom {
-        left: 20px;
-        right: 20px;
+        --merge-wordmark-height: 40px;
+        margin-top: 60px;
+        min-height: 540px;
+        height: calc(100vh - 60px);
+        height: calc(100svh - 60px);
       }
       #home.merge-home .centerpiece {
-        justify-items: start;
+        width: min(300px, calc(100vw - 40px));
       }
       #home.merge-home .slogan {
-        max-width: 280px;
-        font-size: 0.72rem;
+        font-size: 12px;
+      }
+    }
+    @media (max-width: 480px) {
+      #home.merge-home {
+        --merge-wordmark-height: 31px;
+      }
+      #home.merge-home .wordmark--left {
+        left: 16px;
+        right: auto;
+        bottom: 72px;
+      }
+      #home.merge-home .wordmark--right {
+        left: 16px;
+        right: auto;
+        bottom: 22px;
+      }
+      #home.merge-home .centerpiece {
+        inset: 0;
+        width: auto;
+        transform: none;
+        display: block;
+      }
+      #home.merge-home .slogan {
+        position: absolute;
+        top: 20px;
+        left: 16px;
+        max-width: 230px;
+        font-size: 12px;
+        line-height: 1.15;
         text-align: left;
         text-wrap: initial;
       }
       #home.merge-home .arrow-group {
-        justify-content: flex-start;
+        right: 16px;
+        left: auto;
+        bottom: 24px;
+        transform: none;
+      }
+      #home.merge-home .arrow {
+        width: 30px;
+        height: 30px;
+      }
+    }
+    @media (min-width: 901px) {
+      #home.merge-home .wordmark--left {
+        bottom: 47px;
+      }
+      #home.merge-home .wordmark--right {
+        bottom: 47px;
+      }
+      #home.merge-home .centerpiece {
+        top: auto;
+        bottom: 84px;
+      }
+      #home.merge-home .arrow-group {
+        bottom: 40px;
       }
     }
   </style>
@@ -1300,14 +1387,14 @@
 
       <div class="centerpiece">
         <p class="slogan" data-i18n="hero_desc">Изготавливаем мебель по индивидуальному дизайну из высококачественных материалов</p>
-        <div class="arrow-group">
-          <button class="arrow arrow--prev" type="button" onclick="changeHeroSlide(-1)" aria-label="Предыдущий слайд">
-            <img src="https://static.tildacdn.com/tild3933-6234-4631-a333-396131623031/arrow_white.svg" alt="">
-          </button>
-          <button class="arrow arrow--next" type="button" onclick="changeHeroSlide(1)" aria-label="Следующий слайд">
-            <img src="https://static.tildacdn.com/tild3933-6234-4631-a333-396131623031/arrow_white.svg" alt="">
-          </button>
-        </div>
+      </div>
+      <div class="arrow-group">
+        <button class="arrow arrow--prev" type="button" onclick="changeHeroSlide(-1)" aria-label="Предыдущий слайд">
+          <img src="https://static.tildacdn.com/tild3933-6234-4631-a333-396131623031/arrow_white.svg" alt="">
+        </button>
+        <button class="arrow arrow--next" type="button" onclick="changeHeroSlide(1)" aria-label="Следующий слайд">
+          <img src="https://static.tildacdn.com/tild3933-6234-4631-a333-396131623031/arrow_white.svg" alt="">
+        </button>
       </div>
 
       <img
@@ -1351,20 +1438,20 @@
   </div>
 </section>
 
-<!-- ═══ CATALOG ═══ -->
-<section id="catalog">
-  <div class="section-label" data-i18n="cat_label">Каталог</div>
-  <div class="divider"></div>
-  <h2 class="section-title" data-i18n="cat_title">Все товары</h2>
-  <div class="catalog-grid" id="catalogGrid"></div>
-</section>
-
 <!-- ═══ POPULAR ═══ -->
 <section id="popular">
   <div class="section-label" data-i18n="pop_label">Хиты продаж</div>
   <div class="divider"></div>
   <h2 class="section-title" data-i18n="pop_title">Популярные модели</h2>
   <div class="popular-grid" id="popularGrid"></div>
+</section>
+
+<!-- ═══ CATALOG ═══ -->
+<section id="catalog">
+  <div class="section-label" data-i18n="cat_label">Каталог</div>
+  <div class="divider"></div>
+  <h2 class="section-title" data-i18n="cat_title">Все товары</h2>
+  <div class="catalog-grid" id="catalogGrid"></div>
 </section>
 
 <!-- ═══ CONTACT ═══ -->
@@ -1610,6 +1697,7 @@ function setLang(l) {
   renderCatalog();
   renderPopular();
   renderCart();
+  window.requestAnimationFrame(positionHeroCenter);
 }
 
 // ─── HERO SLIDER ───────────────────────────────────────────
@@ -1654,6 +1742,56 @@ function initHeroSlider() {
   });
 }
 
+function positionHeroCenter() {
+  const home = document.getElementById('home');
+  if (!home || !home.classList.contains('merge-home')) return;
+
+  const leftWord = home.querySelector('.wordmark--left');
+  const rightWord = home.querySelector('.wordmark--right');
+  const centerpiece = home.querySelector('.centerpiece');
+  const arrowGroup = home.querySelector('.arrow-group');
+
+  if (!leftWord || !rightWord || !centerpiece || !arrowGroup) return;
+
+  if (window.innerWidth <= 900) {
+    centerpiece.style.left = '';
+    centerpiece.style.width = '';
+    centerpiece.style.transform = '';
+    arrowGroup.style.left = '';
+    arrowGroup.style.transform = '';
+    return;
+  }
+
+  const homeRect = home.getBoundingClientRect();
+  const leftRect = leftWord.getBoundingClientRect();
+  const rightRect = rightWord.getBoundingClientRect();
+  const gapStart = leftRect.right - homeRect.left;
+  const gapEnd = rightRect.left - homeRect.left;
+
+  if (gapEnd <= gapStart) return;
+
+  const gapCenter = (gapStart + gapEnd) / 2;
+  const gapWidth = Math.max(180, Math.min(460, gapEnd - gapStart - 32));
+
+  centerpiece.style.left = `${gapCenter}px`;
+  centerpiece.style.width = `${gapWidth}px`;
+  centerpiece.style.transform = 'translateX(-50%)';
+  arrowGroup.style.left = `${gapCenter}px`;
+  arrowGroup.style.transform = 'translateX(-50%)';
+}
+
+function initHeroCenter() {
+  const wordmarks = document.querySelectorAll('#home.merge-home .wordmark');
+  wordmarks.forEach((img) => {
+    if (!img.complete) {
+      img.addEventListener('load', positionHeroCenter);
+    }
+  });
+  window.addEventListener('resize', positionHeroCenter);
+  window.addEventListener('load', positionHeroCenter);
+  window.requestAnimationFrame(positionHeroCenter);
+}
+
 // ─── PRODUCT CARD ─────────────────────────────────────────
 function cardHTML(p, compact) {
   return `
@@ -1678,7 +1816,7 @@ function renderCatalog() {
 }
 function renderPopular() {
   document.getElementById('popularGrid').innerHTML =
-    PRODUCTS.filter(p => p.popular).slice(0,6).map(p => cardHTML(p, true)).join('');
+    PRODUCTS.filter(p => p.popular).slice(0,3).map(p => cardHTML(p, true)).join('');
 }
 
 // ─── CART ─────────────────────────────────────────────────
@@ -1801,6 +1939,7 @@ function updateMobileLangs(l) {
 setLang(lang);
 updateMobileLangs(lang);
 initHeroSlider();
+initHeroCenter();
 
 // Fix social links
 document.querySelectorAll('.social-link').forEach(a => {
