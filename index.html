@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Qadam Loft — Авторская мебель</title>
   <link rel="icon" type="image/png" href="Q.png?v=20260416">
+  <link rel="preload" as="image" href="pexels-albeg-27023397.webp">
   <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1477,12 +1478,12 @@
 <!-- ═══ HERO ═══ -->
 <section id="home" class="merge-home">
   <div class="hero-slides" aria-hidden="true">
-    <div class="hero-slide is-active" style="background-image:url('pexels-albeg-27023397.jpg')"></div>
-    <div class="hero-slide" style="background-image:url('pexels-artbovich-6283968.jpg')"></div>
-    <div class="hero-slide" style="background-image:url('pexels-artbovich-6296918.jpg')"></div>
-    <div class="hero-slide" style="background-image:url('pexels-artbovich-7018828.jpg')"></div>
-    <div class="hero-slide" style="background-image:url('pexels-artbovich-7174409.jpg')"></div>
-    <div class="hero-slide" style="background-image:url('pexels-artbovich-8134762.jpg')"></div>
+    <div class="hero-slide is-active" data-bg="pexels-albeg-27023397.webp" style="background-image:url('pexels-albeg-27023397.webp')"></div>
+    <div class="hero-slide" data-bg="pexels-artbovich-6283968.webp"></div>
+    <div class="hero-slide" data-bg="pexels-artbovich-6296918.webp"></div>
+    <div class="hero-slide" data-bg="pexels-artbovich-7018828.webp"></div>
+    <div class="hero-slide" data-bg="pexels-artbovich-7174409.webp"></div>
+    <div class="hero-slide" data-bg="pexels-artbovich-8134762.webp"></div>
   </div>
   <div class="hero-overlay"></div>
   <div class="bottom">
@@ -1541,7 +1542,7 @@
         </div>
       </div>
     </div>
-    <img src="about.jpg" alt="Qadam Loft мастерская" class="about-img">
+    <img src="about.jpg" alt="Qadam Loft мастерская" class="about-img" loading="lazy" decoding="async">
   </div>
 </section>
 
@@ -2222,8 +2223,8 @@ const PRODUCTS = RAW_PRODUCTS.map((product, index) => {
     name: { ru: product.name, kz: product.name, en: product.name },
     cat: CATEGORY_LABELS[categoryKey],
     price: product.price,
-    img: product.images[0],
-    images: product.images,
+    img: getOptimizedImagePath(product.images[0]),
+    images: product.images.map(getOptimizedImagePath),
     desc: buildProductDescription(product.name)
   };
 });
@@ -2240,6 +2241,9 @@ const HERO_SLIDE_DELAY = 3000;
 // ─── HELPERS ─────────────────────────────────────────────
 const t = key => T[lang][key] || key;
 const fmt = n => n.toLocaleString('ru-RU') + ' ₸';
+function getOptimizedImagePath(assetPath) {
+  return assetPath.replace(/\.(png|jpe?g)$/i, '.webp');
+}
 const getProductById = id => PRODUCTS.find(x => x.id === id);
 
 // ─── LANGUAGE ─────────────────────────────────────────────
@@ -2259,10 +2263,20 @@ function setLang(l) {
 }
 
 // ─── HERO SLIDER ───────────────────────────────────────────
+function ensureHeroSlideBackground(slide) {
+  if (!slide || slide.dataset.bgLoaded === 'true') return;
+  const bg = slide.dataset.bg;
+  if (!bg) return;
+  slide.style.backgroundImage = `url('${bg}')`;
+  slide.dataset.bgLoaded = 'true';
+}
+
 function setHeroSlide(index) {
   const slides = document.querySelectorAll('.hero-slide');
   if (!slides.length) return;
   heroSlideIndex = (index + slides.length) % slides.length;
+  ensureHeroSlideBackground(slides[heroSlideIndex]);
+  ensureHeroSlideBackground(slides[(heroSlideIndex + 1) % slides.length]);
   slides.forEach((slide, slideIndex) => {
     slide.classList.toggle('is-active', slideIndex === heroSlideIndex);
   });
@@ -2356,7 +2370,7 @@ function cardHTML(p, compact) {
     <div class="product-card">
       <button type="button" class="product-card-media" onclick="openModal(${p.id})" aria-label="${t('btn_detail')}: ${p.name[lang]}">
         <div class="product-card-img-wrap">
-          <img src="${p.img}" alt="${p.name[lang]}" class="product-card-img" loading="lazy">
+          <img src="${p.img}" alt="${p.name[lang]}" class="product-card-img" loading="lazy" decoding="async">
         </div>
       </button>
       <div class="product-card-body">
@@ -2470,7 +2484,7 @@ function renderModalBody() {
     <div class="modal-gallery">
       <div class="modal-stage">
         ${showGalleryControls ? `<button type="button" class="modal-gallery-nav prev" onclick="changeModalImage(-1)" aria-label="${prevLabel}">&#8249;</button>` : ''}
-        <img src="${images[activeModalImageIndex]}" class="modal-img" alt="${p.name[lang]}">
+        <img src="${images[activeModalImageIndex]}" class="modal-img" alt="${p.name[lang]}" decoding="async">
         ${showGalleryControls ? `<button type="button" class="modal-gallery-nav next" onclick="changeModalImage(1)" aria-label="${nextLabel}">&#8250;</button>` : ''}
       </div>
       ${showGalleryControls ? `
@@ -2482,7 +2496,7 @@ function renderModalBody() {
               onclick="setModalImage(${index})"
               aria-label="${p.name[lang]} ${index + 1}"
             >
-              <img src="${image}" alt="${p.name[lang]} ${index + 1}" loading="lazy">
+              <img src="${image}" alt="${p.name[lang]} ${index + 1}" loading="lazy" decoding="async">
             </button>
           `).join('')}
         </div>
